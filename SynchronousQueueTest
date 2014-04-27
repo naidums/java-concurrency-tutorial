@@ -1,0 +1,59 @@
+package com.msn.java.concurrent;
+
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.TimeUnit;
+
+public class SynchronousQueueTest {
+	public static void main(String[] args) {
+		
+		BlockingQueue<Integer> queue = new SynchronousQueue<>(true);
+		Producer producer = new Producer(queue);
+
+		Consumer consumer = new Consumer(queue);
+		new Thread(producer).start();
+		new Thread(consumer).start();
+	}
+}
+
+class Producer implements Runnable {
+	BlockingQueue<Integer> queue;
+
+	public Producer(BlockingQueue<Integer> queue) {
+		this.queue = queue;
+	}
+
+	public void run() {
+		Integer i = 0;
+		while (true) {
+			try {
+				TimeUnit.SECONDS.sleep(2);
+				System.out.println("Inserting data : " + i);
+				queue.put(i);
+				i++;
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+}
+
+class Consumer implements Runnable {
+	
+	BlockingQueue<Integer> queue;
+
+	public Consumer(BlockingQueue<Integer> queue) {
+		this.queue = queue;
+	}
+
+	public void run() {
+		while (true) {
+			try {
+				TimeUnit.SECONDS.sleep(2);
+				System.out.println("Consuming data : " + queue.take());
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+}
